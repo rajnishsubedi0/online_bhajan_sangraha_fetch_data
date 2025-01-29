@@ -63,8 +63,8 @@ RequestQueue requestQueue, requestQueue2;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        url="https://mocki.io/v1/b22dac58-2110-41ca-a7c9-a38ba80ae0ce";
-        url_bhajans="https://mocki.io/v1/8583b6d5-cb54-40f1-84a6-fc0802f260a6 ";
+        url="https://mocki.io/v1/8583b6d5-cb54-40f1-84a6-fc0802f260a6";
+        url_bhajans="https://mocki.io/v1/92e83900-5c0f-4dbc-bf18-3394bd40a19c";
 
         recyclerView=findViewById(R.id.recyclerView);
         arrayList=new ArrayList<>();
