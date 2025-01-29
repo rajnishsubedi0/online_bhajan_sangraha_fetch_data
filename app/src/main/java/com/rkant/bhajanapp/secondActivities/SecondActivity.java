@@ -16,13 +16,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
-import com.rkant.bhajanapp.Favourites.FavouriteBookmarked;
+import com.rkant.bhajanapp.FirstActivities.DB_Handler;
 import com.rkant.bhajanapp.FirstActivities.DataHolder;
 import com.rkant.bhajanapp.R;
 
@@ -38,18 +32,16 @@ import java.util.ArrayList;
 
 public class SecondActivity extends AppCompatActivity {
     MenuItem youtube_url_menu;
-    ArrayList<DataHolder> arrayList;
+    ArrayList<com.rkant.bhajanapp.FirstActivities.DataHolder> arrayList;
     RecyclerView recyclerView;
     RecyclerAdapter bhajanData_recyclerView;
     String youtube_url;
     String url;
-    RequestQueue requestQueue;
-    JsonArrayRequest request;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logic);
-        url="https://mocki.io/v1/92e83900-5c0f-4dbc-bf18-3394bd40a19c";
+       // url="https://mocki.io/v1/92e83900-5c0f-4dbc-bf18-3394bd40a19c";
         recyclerView = findViewById(R.id.recyclerSecondView);
         arrayList = new ArrayList<>();
 
@@ -59,7 +51,7 @@ public class SecondActivity extends AppCompatActivity {
 
         try {
             setData();
-            getOnlineData();
+            getBhajanData();
         } catch (IOException | JSONException e) {
             throw new RuntimeException(e);
         }
@@ -67,48 +59,16 @@ public class SecondActivity extends AppCompatActivity {
 
     }
 
-    public void getOnlineData(){
+    public void getBhajanData() throws JSONException {
         Bundle bundle=getIntent().getExtras();
         String intentPosition=bundle.getString("position");
-        requestQueue= Volley.newRequestQueue(getApplicationContext());
-        request=new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray jsonArray) {
-                Toast.makeText(SecondActivity.this, "Response got", Toast.LENGTH_SHORT).show();
-                for (int i=0;i<jsonArray.length();i++){
-                    JSONObject object= null;
-                    try {
-                        object = jsonArray.getJSONObject(i);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                    try {
-                        if(intentPosition.equals(object.getString("id"))){
-                            String str=object.getString("bhajan");
-                            JSONArray array=new JSONArray(str);
-                            for (int j=0;j<array.length();j++){
-                                arrayList.add(new DataHolder(array.getString(j)));
-                            }
-                            break;
-                        }
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                setAdapter();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(SecondActivity.this, "Response not got", Toast.LENGTH_SHORT).show();
-            }
-        });
-        requestQueue.add(request);
+        arrayList=new DB_Handler(getApplicationContext()).fetchActualBhajanData(intentPosition);
+        setAdapter();
     }
     public void setData() throws IOException, JSONException {
         Bundle bundle=getIntent().getExtras();
         String intentPosition=bundle.getString("position");
-        setAdapter();
+
         String string_url_link=readDataFromFile(R.raw.youtube_link);
         JSONArray url_array=new JSONArray(string_url_link);
         youtube_url="";

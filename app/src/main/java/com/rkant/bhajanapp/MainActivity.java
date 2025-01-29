@@ -55,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
 
 ArrayList<com.rkant.bhajanapp.FirstActivities.DataHolder> nepaliNumbers;
 AdapterView.OnItemSelectedListener listener;
-JsonArrayRequest request;
+JsonArrayRequest request,request2;
 String url,url_bhajans;
-RequestQueue requestQueue;
+RequestQueue requestQueue, requestQueue2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +82,7 @@ RequestQueue requestQueue;
         }
 
 
-
+        getBhajansOnlineData();
 
 
         // Changing Action Bar colour
@@ -100,7 +100,26 @@ RequestQueue requestQueue;
 
 
     }
+    public void getBhajansOnlineData(){
+        requestQueue2=Volley.newRequestQueue(getApplicationContext());
+        request2=new JsonArrayRequest(Request.Method.GET, url_bhajans, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray jsonArray) {
+                Toast.makeText(MainActivity.this, "Called", Toast.LENGTH_SHORT).show();
+                try {
+                    new DB_Handler(MainActivity.this).fetchBhajansFromCloud(jsonArray);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
 
+            }
+        });
+        requestQueue2.add(request2);
+    }
        public void getOnlineData(){
               if (new DB_Handler(MainActivity.this).checkIfDB_Exists("bhajan_list")){
                    ArrayList<DataHolderForDB> dArrayList=new DB_Handler(MainActivity.this).fetchDbDataFromDBForBhajanList();

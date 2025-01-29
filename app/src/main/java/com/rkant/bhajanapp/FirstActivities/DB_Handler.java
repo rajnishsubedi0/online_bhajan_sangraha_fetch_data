@@ -16,14 +16,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class DB_Handler extends SQLiteOpenHelper {
-    Context context;
     ArrayList<DataHolderForDB> arrayList_DataHolderForDB =new ArrayList<>();
+    Context context;
+    ArrayList<DataHolder> arrayListDataHolder =new ArrayList<>();
     private static final String DB_NAME="bhajan_list";
     private static final int DB_VERSION=1;
     //Favourite bhajan bookmark db name
     private static final String DB_TABLE_FAVOURITE="bhajan_favourite";
     //Main activity bhajan list db name
     private static final String DB_TABLE_BHAJAN_MENU_LIST="bhajan_list";
+    private static final String DB_TABLE_BHAJANS="bhajans_table";
     private static final String SERIAL_NO="serial_no";
     private static final String BHAJAN_ID="bhajan_id";
     private static final String BHAJAN_NAME_NEPALI="bhajan_name_nepali";
@@ -44,8 +46,13 @@ public class DB_Handler extends SQLiteOpenHelper {
                     BHAJAN_ID+" TEXT, "+
                     BHAJAN_NAME_NEPALI+" TEXT, "+
                     BHAJAN_NAME_ENGLISH+" TEXT)";
+            String query3="CREATE TABLE "+DB_TABLE_BHAJANS+" ("+
+                    SERIAL_NO+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                    BHAJAN_ID+" VARCHAR, "+
+                    BHAJAN_NAME_NEPALI+" VARCHAR)";
             sqLiteDatabase.execSQL(query);
             sqLiteDatabase.execSQL(query2);
+            sqLiteDatabase.execSQL(query3);
         }
 
         @Override
@@ -70,6 +77,57 @@ public class DB_Handler extends SQLiteOpenHelper {
             db.close();
             return false;
         }
+    public boolean fetchBhajansFromCloud(JSONArray jsonArray) throws JSONException {
+
+        SQLiteDatabase db=this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DB_TABLE_BHAJANS, null);
+        cursor.moveToFirst();
+        try{
+            if ("1".equals(cursor.getString(0))) {
+                Toast.makeText(context, "Already Loded", Toast.LENGTH_SHORT).show();
+                db.close();
+                cursor.close();
+                return true;
+            }} catch (Exception ignored){
+
+        }
+
+
+
+        db.close();
+        db=this.getReadableDatabase();
+        ContentValues contentValues=new ContentValues();
+        for (int i=0;i<jsonArray.length();i++){
+            JSONObject jsonObject= null;
+            try {
+                jsonObject = jsonArray.getJSONObject(i);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+            String nepali_bhajan= null;
+            try {
+                nepali_bhajan = jsonObject.getString("bhajan");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+            String id= null;
+            try {
+                id = jsonObject.getString("id");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+
+
+
+            contentValues.put(BHAJAN_ID,id);
+            contentValues.put(BHAJAN_NAME_NEPALI,nepali_bhajan);
+            db.insert(DB_TABLE_BHAJANS,null,contentValues);
+        };
+
+        db.close();
+        Toast.makeText(context, "Data Added For second activity", Toast.LENGTH_SHORT).show();
+        return false;
+    }
         public boolean addDataFromCloud(JSONArray jsonArray) throws JSONException {
 
             SQLiteDatabase db=this.getReadableDatabase();
@@ -166,14 +224,25 @@ public class DB_Handler extends SQLiteOpenHelper {
         }
         cursor.close();
     }
+
+    public ArrayList<DataHolder> fetchActualBhajanData(String position) throws JSONException {
+        SQLiteDatabase db=this.getReadableDatabase();
+        Cursor cursor=db.rawQuery("SELECT * FROM "+DB_TABLE_BHAJANS+" WHERE "+BHAJAN_ID+"='"+position+"'",new String[]{});
+        cursor.moveToFirst();
+        JSONArray jsonArray=new JSONArray(cursor.getString(2));
+        for (int i=0;i< jsonArray.length();i++){
+            arrayListDataHolder.add(new DataHolder(jsonArray.getString(i)));
+        }
+
+        cursor.close();
+        return arrayListDataHolder;
+    }
     public ArrayList<DataHolderForDB> fetchDbDataFromDBForBhajanList(){
         SQLiteDatabase db=this.getReadableDatabase();
         Cursor cursor=db.rawQuery("SELECT * FROM "+DB_TABLE_BHAJAN_MENU_LIST,null);
 
         while (cursor.moveToNext()){
             arrayList_DataHolderForDB.add(new DataHolderForDB(cursor.getString(2),cursor.getString(3),cursor.getString(1)));
-            //FavouriteBookmarked.publicArrayList.add(new DataHolder(cursor.getString(1)));
-
 
         }
         cursor.close();
