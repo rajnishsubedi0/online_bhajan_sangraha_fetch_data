@@ -66,7 +66,6 @@ public class DB_Handler extends SQLiteOpenHelper {
             cursor.moveToFirst();
             try{
                 if ("1".equals(cursor.getString(0))) {
-                    Toast.makeText(context, "Already Loded", Toast.LENGTH_SHORT).show();
                     db.close();
                     cursor.close();
                     return true;
@@ -84,7 +83,6 @@ public class DB_Handler extends SQLiteOpenHelper {
         cursor.moveToFirst();
         try{
             if ("1".equals(cursor.getString(0))) {
-                Toast.makeText(context, "Already Loded", Toast.LENGTH_SHORT).show();
                 db.close();
                 cursor.close();
                 return true;
@@ -125,7 +123,6 @@ public class DB_Handler extends SQLiteOpenHelper {
         };
 
         db.close();
-        Toast.makeText(context, "Data Added For second activity", Toast.LENGTH_SHORT).show();
         return false;
     }
         public boolean addDataFromCloud(JSONArray jsonArray) throws JSONException {
@@ -135,7 +132,6 @@ public class DB_Handler extends SQLiteOpenHelper {
             cursor.moveToFirst();
             try{
             if ("1".equals(cursor.getString(0))) {
-                Toast.makeText(context, "Already Loded", Toast.LENGTH_SHORT).show();
                 db.close();
                 cursor.close();
                 return true;
@@ -183,7 +179,6 @@ public class DB_Handler extends SQLiteOpenHelper {
         };
 
             db.close();
-            Toast.makeText(context, "Data Added", Toast.LENGTH_SHORT).show();
             return false;
         }
         public void addData(String str){

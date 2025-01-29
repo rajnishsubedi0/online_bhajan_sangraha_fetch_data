@@ -64,7 +64,7 @@ RequestQueue requestQueue, requestQueue2;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         url="https://mocki.io/v1/b22dac58-2110-41ca-a7c9-a38ba80ae0ce";
-        url_bhajans="https://mocki.io/v1/92e83900-5c0f-4dbc-bf18-3394bd40a19c";
+        url_bhajans="https://mocki.io/v1/8583b6d5-cb54-40f1-84a6-fc0802f260a6 ";
 
         recyclerView=findViewById(R.id.recyclerView);
         arrayList=new ArrayList<>();
@@ -105,7 +105,6 @@ RequestQueue requestQueue, requestQueue2;
         request2=new JsonArrayRequest(Request.Method.GET, url_bhajans, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray jsonArray) {
-                Toast.makeText(MainActivity.this, "Called", Toast.LENGTH_SHORT).show();
                 try {
                     new DB_Handler(MainActivity.this).fetchBhajansFromCloud(jsonArray);
                 } catch (JSONException e) {
@@ -153,7 +152,6 @@ RequestQueue requestQueue, requestQueue2;
                     throw new RuntimeException(e);
                 }
 
-                Toast.makeText(MainActivity.this, "response got", Toast.LENGTH_SHORT).show();
                 for (int i=0;i<jsonArray.length();i++){
                     JSONObject jsonObject= null;
                     try {
@@ -189,7 +187,7 @@ RequestQueue requestQueue, requestQueue2;
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this, "response not got", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Response not got, Server error", Toast.LENGTH_SHORT).show();
             }
         });
         requestQueue.add(request);
@@ -201,7 +199,7 @@ RequestQueue requestQueue, requestQueue2;
         for (int j=0;j<array.length();j++){
             String strr=array.getString(j);
             nepaliNumbers.add(new com.rkant.bhajanapp.FirstActivities.DataHolder(strr));
-           // Toast.makeText(this, ""+strr, Toast.LENGTH_SHORT).show();
+
 
         }
 
